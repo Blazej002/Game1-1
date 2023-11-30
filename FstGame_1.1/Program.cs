@@ -4,6 +4,7 @@ namespace FstGame_1._1
 {
     internal class Program
     {
+        public static bool _debugMode = false;
         static void Main(string[] args)
         {
             //bool pickUpWeapon = false;
@@ -20,10 +21,27 @@ namespace FstGame_1._1
             var room3 = new Maps(15, 10, player, doors.room3);
             Maps currentRoom = room1 as dynamic;
             bool leftFirstRoom = false;
+            StartPrompt();
+            Console.ReadKey();
+
             while (true)
             {
-                if ((player.horizontal == 5  && player.vertical == room1._Height)&& !leftFirstRoom) { currentRoom = room2; }
-                else if ((player.horizontal == 5 && player.vertical == 0)  && !leftFirstRoom) { currentRoom = room1; leftFirstRoom = false; }
+                Console.WriteLine($"Vert: {player.vertical}     Hor : {player.horizontal} ");
+                if (_debugMode) { Console.WriteLine($"Down:{player.vertical+1} Up:{player.vertical-1}\nRight:{player.horizontal-1}  left:{player.horizontal+1}"); }
+                if ((player.horizontal == 5 && player.vertical == room1._Height - 2) && !leftFirstRoom)
+                {
+                    currentRoom = room2;
+                    leftFirstRoom = true;
+                    player.horizontal = 5;
+                    player.vertical = 1;
+                }
+                else if ((player.horizontal == 5 && player.vertical == 1) && leftFirstRoom)
+                {
+                    currentRoom = room1;
+                    leftFirstRoom = false;
+                    player.horizontal = 5;
+                    player.vertical = 14;
+                }
                 currentRoom.DrawMap();
                 var userInp = Console.ReadKey().Key;
                 Movement(userInp, player, currentRoom);
@@ -32,6 +50,12 @@ namespace FstGame_1._1
                 Console.Clear();
             }
 
+        }
+
+        private static void StartPrompt()
+        {
+            Console.WriteLine("Move with the arrows");
+            Console.WriteLine("Debug mode : Key = 0");
         }
 
         private static void Movement(ConsoleKey userInp, Player player, Maps room)
@@ -54,6 +78,10 @@ namespace FstGame_1._1
                     if (player.horizontal == (room._Width-2)) { return; }
                     player.horizontal++;
                     break;
+                case ConsoleKey.D0:
+                    _debugMode = !_debugMode;
+                    break;
+
             }
         }
     }
